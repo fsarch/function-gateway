@@ -34,7 +34,7 @@ export class FunctionExecuteController {
     }
 
     // 2. Worker-Server URL aus Config lesen
-    const functionServerUrl = this.configService.get<string>('function.server');
+    const functionServerUrl = this.configService.get<string>('function.node_worker');
     if (!functionServerUrl) {
       throw new NotFoundException('Function server URL not configured');
     }

@@ -6,11 +6,17 @@ import {
   Body,
   Param,
   Query,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@fsarch/server/auth';
+import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { CreateFunctionDto } from '../../models/function/CreateFunctionDto.js';
 import { FunctionDto } from '../../models/function/FunctionDto.js';
 import { FunctionService } from './function.service.js';
 
+@UseGuards(AuthGuard)
+@ApiBearerAuth()
+@ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @Controller('functions')
 export class FunctionController {
   constructor(private readonly functionService: FunctionService) {}
