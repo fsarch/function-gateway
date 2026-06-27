@@ -7,8 +7,7 @@ import {
   UseGuards,
   NotFoundException,
 } from '@nestjs/common';
-import { AuthGuard } from '@fsarch/server/auth';
-import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { AuthGuard, Public } from '@fsarch/server/auth';
 import { Request } from 'express';
 import type { Response } from 'express';
 import { FunctionService } from './function.service.js';
@@ -16,9 +15,8 @@ import { FunctionWorkerAuthService } from '../../services/function-worker/functi
 import { ConfigService } from '@nestjs/config';
 
 @UseGuards(AuthGuard)
-@ApiBearerAuth()
-@ApiUnauthorizedResponse({ description: 'Unauthorized' })
-@Controller('functions/:functionId/_actions')
+@Public()
+@Controller('functions/:functionId/http/_actions')
 export class FunctionExecuteController {
   constructor(
     private readonly functionService: FunctionService,
