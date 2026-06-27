@@ -1,9 +1,7 @@
 import {
   Controller,
   All,
-  Body,
   Param,
-  Query,
   Req,
   UseGuards,
   NotFoundException,
@@ -11,7 +9,6 @@ import {
 import { AuthGuard } from '@fsarch/server/auth';
 import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Request } from 'express';
-import { ExecuteFunctionDto } from '../../models/function/ExecuteFunctionDto.js';
 import { FunctionService } from './function.service.js';
 import { FunctionWorkerAuthService } from '../../services/function-worker/function-worker.auth.service.js';
 import { ConfigService } from '@nestjs/config';
@@ -31,7 +28,6 @@ export class FunctionExecuteController {
   async executeFunction(
     @Req() request: Request,
     @Param('functionId') functionId: string,
-    @Body() dto: ExecuteFunctionDto,
   ): Promise<any> {
     // 1. Function aus der Datenbank holen
     const func = await this.functionService.getFunction(functionId);
@@ -53,7 +49,7 @@ export class FunctionExecuteController {
     const executionUrl = `${functionWorkerUrl}/v1/functions/${func.functionId}/executions?wait=true`;
 
     // Extrahiere HTTP-Methode aus dem Request
-    const method = dto.method ?? request.method;
+    const method = request.method;
 
     // Extrahiere Header aus dem Request und füge Content-Type hinzu
     const requestHeaders = request.headers as Record<string, string | string[]>;
@@ -63,19 +59,28 @@ export class FunctionExecuteController {
         acc[key] = Array.isArray(value) ? value.join(',') : value;
         return acc;
       }, {} as Record<string, string>),
-      ...(dto.headers ?? {}),
     };
 
-    // Konvertiere Header in headerArray Format
-    const headerArray = Object.entries(headers).map(([key, value]) => ({
+    // Konvertiere Header in headerList Format
+    const headerList = Object.entries(headers).map(([key, value]) => ({
       key,
       value,
     }));
 
-    // Füge headerArray aus dem DTO hinzu, falls vorhanden
-    if (dto.headerArray) {
-      headerArray.push(...dto.headerArray);
-    }
+    // Extrahiere Query-Parameter aus dem Request
+    const query: Record<string, string> = {};
+    const requestQuery = request.query as Record<string, string | string[] | undefined>;
+    Object.entries(requestQuery).forEach(([key, value]) => {
+      if (value !== undefined) {
+        query[key] = Array.isArray(value) ? value.join(',') : String(value);
+      }
+    });
+
+    // Konvertiere Query-Parameter in queryList Format
+    const queryList = Object.entries(query).map(([key, value]) => ({
+      key,
+      value,
+    }));
 
     try {
       const response = await fetch(executionUrl, {
@@ -88,7 +93,9 @@ export class FunctionExecuteController {
           arguments: [{
             method,
             headers,
-            headerArray,
+            headerList,
+            query,
+            queryList,
           }],
         }),
       });

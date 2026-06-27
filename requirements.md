@@ -84,10 +84,11 @@ All endpoints require authentication via Bearer token (OIDC/JWT).
 - **Method**: Accepts ALL HTTP methods (GET, POST, PUT, DELETE, PATCH, etc.)
 - **Request Body**: Optional, passed through to function
 - **Request Headers**: Forwarded to function as part of the arguments
+- **Request Query Parameters**: Forwarded to function as part of the arguments
 - **Query Parameters**: None
 - **Response**: Execution result from worker server
 - **Error Handling**: Returns 404 if function not found or execution fails
-- **Note**: The Gateway transforms the HTTP request into a function call. The function receives a single argument object containing `method`, `headers`, and `headerArray` representing the original HTTP request. The `wait` parameter is always set to `true`.
+- **Note**: The Gateway transforms the HTTP request into a function call. The function receives a single argument object containing `method`, `headers`, `headerList`, `query`, and `queryList` representing the original HTTP request. The `wait` parameter is always set to `true`.
 
 #### Get Function
 - **Endpoint**: `GET /functions/:functionId`
@@ -125,7 +126,9 @@ All endpoints require authentication via Bearer token (OIDC/JWT).
 5. Gateway transforms the HTTP request into a function call with arguments containing:
    - `method`: The HTTP method (GET, POST, etc.)
    - `headers`: Request headers as key-value object
-   - `headerArray`: Request headers as array of {key, value} pairs
+   - `headerList`: Request headers as list of {key, value} pairs
+   - `query`: Query parameters as key-value object
+   - `queryList`: Query parameters as list of {key, value} pairs
 6. Gateway sends the function call to the worker: `POST /v1/functions/{functionId}/executions?wait=true`
 7. Gateway includes the access token in the `Authorization: Bearer` header
 8. Gateway returns worker response to client
