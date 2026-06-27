@@ -82,13 +82,13 @@ All endpoints require authentication via Bearer token (OIDC/JWT).
 - **Endpoint**: `ANY /functions/:functionId/_actions/execute`
 - **Auth**: Required
 - **Method**: Accepts ALL HTTP methods (GET, POST, PUT, DELETE, PATCH, etc.)
-- **Request Body**: Optional, passed through to function
+- **Request Body**: Ignored - only HTTP method, headers, and query parameters are forwarded
 - **Request Headers**: Forwarded to function as part of the arguments
 - **Request Query Parameters**: Forwarded to function as part of the arguments
 - **Query Parameters**: None
-- **Response**: Execution result from worker server
+- **Response**: Transformed from function response format
 - **Error Handling**: Returns 404 if function not found or execution fails
-- **Note**: The Gateway transforms the HTTP request into a function call. The function receives a single argument object containing `method`, `headers`, `headerList`, `query`, and `queryList` representing the original HTTP request. The `wait` parameter is always set to `true`.
+- **Note**: The Gateway transforms the HTTP request into a function call. The function receives a single argument object containing `method`, `headers`, `headerList`, `query`, and `queryList` representing the original HTTP request. The function must return a response object with `{ headers?, headerList?, statusCode?, statusText?, body? }` which the gateway transforms back into an HTTP response. The `wait` parameter is always set to `true`.
 
 #### Get Function
 - **Endpoint**: `GET /functions/:functionId`
@@ -131,8 +131,14 @@ All endpoints require authentication via Bearer token (OIDC/JWT).
    - `queryList`: Query parameters as list of {key, value} pairs
 6. Gateway sends the function call to the worker: `POST /v1/functions/{functionId}/executions?wait=true`
 7. Gateway includes the access token in the `Authorization: Bearer` header
-8. Gateway returns worker response to client
-9. If execution fails, Gateway returns error with context
+8. Function processes the request and returns a response object with:
+   - `statusCode`: HTTP status code (number, default: 200)
+   - `statusText`: HTTP status text (string, default: 'OK')
+   - `body`: Response body (object, string, or null)
+   - `headers`: Response headers as key-value object (optional)
+   - `headerList`: Response headers as list of {key, value} pairs (optional)
+9. Gateway transforms the function response back into an HTTP response with the specified status, headers, and body
+10. If execution fails, Gateway returns error with context
 
 ## Security Considerations
 - All endpoints require authentication via `@fsarch/server` AuthGuard

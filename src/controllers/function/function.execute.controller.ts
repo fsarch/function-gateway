@@ -3,12 +3,14 @@ import {
   All,
   Param,
   Req,
+  Res,
   UseGuards,
   NotFoundException,
 } from '@nestjs/common';
 import { AuthGuard } from '@fsarch/server/auth';
 import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Request } from 'express';
+import type { Response } from 'express';
 import { FunctionService } from './function.service.js';
 import { FunctionWorkerAuthService } from '../../services/function-worker/function-worker.auth.service.js';
 import { ConfigService } from '@nestjs/config';
@@ -27,8 +29,9 @@ export class FunctionExecuteController {
   @All('execute')
   async executeFunction(
     @Req() request: Request,
+    @Res() response: Response,
     @Param('functionId') functionId: string,
-  ): Promise<any> {
+  ): Promise<void> {
     // 1. Function aus der Datenbank holen
     const func = await this.functionService.getFunction(functionId);
 
@@ -83,7 +86,7 @@ export class FunctionExecuteController {
     }));
 
     try {
-      const response = await fetch(executionUrl, {
+      const workerResponse = await fetch(executionUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -92,23 +95,59 @@ export class FunctionExecuteController {
         body: JSON.stringify({
           arguments: [{
             method,
-            headers,
-            headerList,
+            headers: headers,
+            headerList: headerList,
             query,
             queryList,
           }],
         }),
       });
 
-      if (!response.ok) {
-        const errorData: any = await response.json().catch(() => ({}));
-        const errorMessage = (errorData as { message?: string }).message || response.statusText;
+      if (!workerResponse.ok) {
+        const errorData: any = await workerResponse.json().catch(() => ({}));
+        const errorMessage = (errorData as { message?: string }).message || workerResponse.statusText;
         throw new NotFoundException(
           `Failed to execute function: ${errorMessage}`,
         );
       }
 
-      return response.json();
+      // Parse wrapped function response: { isError: boolean, result: { status: number, body: string, ... } }
+      const wrappedResponse = await workerResponse.json() as {
+        isError: boolean;
+        result: {
+          status?: number;
+          statusText?: string;
+          body?: string;
+          headers?: Record<string, string>;
+          headerList?: { key: string; value: string }[];
+        };
+      };
+
+      if (wrappedResponse.isError) {
+        response.status(500);
+        response.send('');
+        return;
+      }
+
+      // Unwrap the result
+      const unwrapped = wrappedResponse.result;
+
+      // Extract response data with defaults
+      const httpStatusCode = unwrapped.status ?? 200;
+      const httpStatusText = unwrapped.statusText ?? 'OK';
+      const responseBody = unwrapped.body ?? '';
+      const responseHeaderList = unwrapped.headerList ?? (unwrapped.headers ? Object.entries(unwrapped.headers).map(([key, value]) => ({ key, value })) : []);
+
+      // Set response status
+      response.status(httpStatusCode);
+
+      // Set response headers (headerList takes precedence over headers)
+      responseHeaderList.forEach(({ key, value }) => {
+        response.setHeader(key, value);
+      });
+
+      // Send body (always as string)
+      response.send(responseBody);
     } catch (error: any) {
       // Fehler weiterleiten
       const errorMessage = error.message;
