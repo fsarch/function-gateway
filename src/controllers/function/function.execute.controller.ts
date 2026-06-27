@@ -69,16 +69,16 @@ export class FunctionExecuteController {
     }));
 
     // Extract query parameters from request
-    const query: Record<string, string> = {};
+    const queryParams: Record<string, string> = {};
     const requestQuery = request.query as Record<string, string | string[] | undefined>;
     Object.entries(requestQuery).forEach(([key, value]) => {
       if (value !== undefined) {
-        query[key] = Array.isArray(value) ? value.join(',') : String(value);
+        queryParams[key] = Array.isArray(value) ? value.join(',') : String(value);
       }
     });
 
-    // Convert query parameters to queryList format
-    const queryList = Object.entries(query).map(([key, value]) => ({
+    // Convert query parameters to queryParamList format
+    const queryParamList = Object.entries(queryParams).map(([key, value]) => ({
       key,
       value,
     }));
@@ -95,8 +95,8 @@ export class FunctionExecuteController {
             method,
             headers: headers,
             headerList: headerList,
-            query,
-            queryList,
+            queryParams,
+            queryParamList,
           }],
         }),
       });
