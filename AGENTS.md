@@ -62,3 +62,7 @@ Function Gateway is a NestJS application that manages and executes remote functi
 - Create migrations: `npm run migration:create`
 - Lint: `npm run lint`
 - Test: `npm run test`
+
+## Documentation
+- Always update `requirements.md` when making changes to the API, database schema, or configuration
+- Keep `AGENTS.md` up to date with project-specific conventions and rules

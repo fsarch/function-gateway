@@ -1,7 +1,7 @@
 # Function Gateway - Requirements
 
 ## Overview
-Function Gateway is a backend service that manages function registrations and triggers their execution on remote worker servers. It provides a unified interface to execute functions regardless of their physical location.
+Function Gateway is a backend service that manages function registrations and triggers their execution on remote worker servers. It acts as an API Gateway that transforms HTTP requests into function calls, similar to AWS API Gateway with Lambda integration. The gateway provides authentication, authorization, and a unified interface to execute functions regardless of their physical location.
 
 ## Technical Stack
 - **Framework**: NestJS 11
@@ -10,6 +10,23 @@ Function Gateway is a backend service that manages function registrations and tr
 - **Database**: PostgreSQL
 - **HTTP Client**: Native `fetch` API
 - **Validation**: class-validator, class-transformer
+- **Authentication**: `@fsarch/server` with OIDC/JWT support
+- **Authorization**: `@fsarch/server` UAC (User Access Control)
+
+## Configuration
+The application uses a `config/config.yml` file for all configuration. See the example file for the complete structure.
+
+### Auth Configuration
+- `auth.type`: Authentication type (e.g., `oidc`)
+- `auth.discovery_url`: OIDC discovery endpoint URL
+- `uac.type`: User Access Control type (e.g., `static`)
+- `uac.users`: List of users with their permissions
+
+### Function Worker Configuration
+- `function_server.url`: URL of the function server
+- `function_server.auth`: Authentication settings for function server communication
+- `function_worker.url`: URL of the function worker
+- `function_worker.auth`: Authentication settings for function worker communication
 
 ## Database Schema
 
@@ -20,7 +37,7 @@ Stores types/categories of functions.
 |--------|------|----------|-------------|
 | id | uuid | NO | Primary key, auto-generated |
 | name | varchar(256) | NO | Human-readable name, unique |
-| external_id | varchar(256) | NO | System-wide unique identifier |
+| external_id | varchar(256) | YES | System-wide unique identifier, unique |
 | creation_time | timestamp with time zone | NO | Auto-generated on create |
 | deletion_time | timestamp with time zone | YES | Soft delete timestamp |
 
@@ -33,8 +50,8 @@ Stores function registrations.
 | Column | Type | Nullable | Description |
 |--------|------|----------|-------------|
 | id | uuid | NO | Primary key, auto-generated |
-| worker_server_url | varchar(1024) | NO | Base URL of the worker server |
-| function_uuid | varchar(256) | NO | UUID of the function on the worker |
+| function_uuid | varchar(256) | NO | UUID of the function on the worker server |
+| function_id | varchar(256) | NO | ID of the function (exposed in API) |
 | external_id | varchar(256) | YES | Optional external identifier |
 | function_type_id | uuid | YES | Foreign key to function_type |
 | creation_time | timestamp with time zone | NO | Auto-generated on create |
@@ -45,69 +62,85 @@ Stores function registrations.
 
 ## API Endpoints
 
+All endpoints require authentication via Bearer token (OIDC/JWT).
+
 ### Functions
 
 #### Create Function
 - **Endpoint**: `POST /functions`
+- **Auth**: Required
 - **Request Body**:
   ```json
   {
-    "workerServerUrl": "https://worker.example.com",
-    "functionUuid": "abc-123"
+    "functionId": "abc-123"
   }
   ```
 - **Response**: Created function entity
+- **Status**: 201 Created
 
 #### Execute Function
-- **Endpoint**: `POST /functions/:functionId/_actions/execute?wait=true`
-- **Request Body**:
-  ```json
-  {
-    "arguments": ["arg1", "arg2"]
-  }
-  ```
+- **Endpoint**: `ANY /functions/:functionId/_actions/execute?wait=true`
+- **Auth**: Required
+- **Method**: Accepts ALL HTTP methods (GET, POST, PUT, DELETE, PATCH, etc.)
+- **Request Body**: Optional, passed through to function
+- **Request Headers**: Forwarded to function as part of the arguments
 - **Query Parameters**:
   - `wait`: boolean (default: true) - whether to wait for execution completion
 - **Response**: Execution result from worker server
 - **Error Handling**: Returns 404 if function not found or execution fails
+- **Note**: The Gateway transforms the HTTP request into a function call. The function receives a single argument object containing `method`, `headers`, and `headerArray` representing the original HTTP request.
 
 #### Get Function
 - **Endpoint**: `GET /functions/:functionId`
+- **Auth**: Required
 - **Response**: Function entity
+- **Status**: 200 OK
 
 #### List Functions
 - **Endpoint**: `GET /functions`
-- **Response**: Array of function entities
+- **Auth**: Required
+- **Query Parameters**:
+  - `page`: number (default: 1) - page number
+  - `pageSize`: number (default: 25) - items per page
+- **Response**: Paginated array of function entities
+- **Status**: 200 OK
 
 #### Delete Function
 - **Endpoint**: `DELETE /functions/:functionId`
+- **Auth**: Required
 - **Behavior**: Soft delete (sets deletion_time)
+- **Status**: 200 OK
 
 ## Error Handling
 - Use NestJS HTTP exceptions (`NotFoundException`, `BadRequestException`, etc.)
 - Return appropriate HTTP status codes
 - Include descriptive error messages
 - Propagate worker server errors with context
+- Unauthorized requests return 401 Unauthorized
 
 ## Function Execution Flow
-1. Client sends execution request to Function Gateway
-2. Gateway looks up function by ID in database
-3. Gateway forwards request to worker server at `workerServerUrl`
-4. Worker server endpoint: `POST /v1/functions/{functionUuid}/executions?wait={wait}`
-5. Gateway returns worker response to client
-6. If execution fails, Gateway returns error with context
+1. Client sends HTTP request to Function Gateway (any method: GET, POST, PUT, DELETE, etc.)
+2. Gateway authenticates the request using OIDC/JWT
+3. Gateway looks up function by ID in database
+4. Gateway obtains an access token for the Function Worker using client credentials flow
+5. Gateway transforms the HTTP request into a function call with arguments containing:
+   - `method`: The HTTP method (GET, POST, etc.)
+   - `headers`: Request headers as key-value object
+   - `headerArray`: Request headers as array of {key, value} pairs
+6. Gateway sends the function call to the worker: `POST /v1/functions/{functionId}/executions?wait={wait}`
+7. Gateway includes the access token in the `Authorization: Bearer` header
+8. Gateway returns worker response to client
+9. If execution fails, Gateway returns error with context
 
 ## Security Considerations
+- All endpoints require authentication via `@fsarch/server` AuthGuard
+- Access tokens for worker communication are obtained via OIDC client credentials flow
+- Tokens are cached based on their expiration time (with 60 second buffer)
 - Validate all input data
-- Sanitize worker server URLs
 - Implement proper error handling to avoid information leakage
-- Consider adding authentication/authorization in future
 
-## Future Enhancements
-- Add authentication and authorization
-- Implement rate limiting
-- Add function versioning
-- Support for different function types beyond HTTP
-- Metrics and monitoring integration
-- Retry logic for failed executions
-- Caching of function lookups
+## Configuration Requirements
+- `auth` section must be configured with valid OIDC provider
+- `uac` section must define user permissions
+- `function_worker` section must contain valid URL and auth credentials
+- Database connection must be properly configured
