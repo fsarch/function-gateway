@@ -4,7 +4,7 @@ export class FunctionTable1720373216668 implements MigrationInterface {
   name = 'FunctionTable1720373216668';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // 1. function_type Tabelle erstellen
+    // 1. Create function_type table
     await queryRunner.createTable(
       new Table({
         name: 'function_type',
@@ -45,14 +45,14 @@ export class FunctionTable1720373216668 implements MigrationInterface {
       }),
     );
 
-    // 2. Initialen Datensatz in function_type einfuegen
+    // 2. Insert initial data into function_type
     await queryRunner.manager.insert('function_type', {
       id: '4da0a7eb-6b9a-48f7-ab92-b53c042258f0',
       name: 'HTTP',
       external_id: '$system.http',
     });
 
-    // 3. function Tabelle erstellen (mit function_type_id und Fremdschlüssel)
+    // 3. Create function table (with function_type_id and foreign key)
     await queryRunner.createTable(
       new Table({
         name: 'function',
@@ -107,10 +107,10 @@ export class FunctionTable1720373216668 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    // function Tabelle entfernen (automatisch mit allen Constraints)
+    // Drop function table (automatically with all constraints)
     await queryRunner.dropTable('function');
 
-    // function_type Tabelle entfernen
+    // Drop function_type table
     await queryRunner.dropTable('function_type');
   }
 }

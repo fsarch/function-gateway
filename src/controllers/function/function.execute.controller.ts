@@ -32,29 +32,29 @@ export class FunctionExecuteController {
     @Res() response: Response,
     @Param('functionId') functionId: string,
   ): Promise<void> {
-    // 1. Function aus der Datenbank holen
+    // 1. Get function from database
     const func = await this.functionService.getFunction(functionId);
 
     if (!func) {
       throw new NotFoundException('Function not found');
     }
 
-    // 2. Access Token für Function Worker holen
+    // 2. Get access token for function worker
     const accessToken = await this.functionWorkerAuthService.getAccessToken();
 
-    // 3. Function Worker URL aus Config lesen
+    // 3. Get function worker URL from config
     const functionWorkerUrl = this.configService.get<string>('function_worker.url');
     if (!functionWorkerUrl) {
       throw new NotFoundException('Function worker URL not configured');
     }
 
-    // Endpunkt: POST /v1/functions/{functionId}/executions
+    // Endpoint: POST /v1/functions/{functionId}/executions
     const executionUrl = `${functionWorkerUrl}/v1/functions/${func.functionId}/executions?wait=true`;
 
-    // Extrahiere HTTP-Methode aus dem Request
+    // Extract HTTP method from request
     const method = request.method;
 
-    // Extrahiere Header aus dem Request und füge Content-Type hinzu
+    // Extract headers from request and add Content-Type
     const requestHeaders = request.headers as Record<string, string | string[]>;
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -64,13 +64,13 @@ export class FunctionExecuteController {
       }, {} as Record<string, string>),
     };
 
-    // Konvertiere Header in headerList Format
+    // Convert headers to headerList format
     const headerList = Object.entries(headers).map(([key, value]) => ({
       key,
       value,
     }));
 
-    // Extrahiere Query-Parameter aus dem Request
+    // Extract query parameters from request
     const query: Record<string, string> = {};
     const requestQuery = request.query as Record<string, string | string[] | undefined>;
     Object.entries(requestQuery).forEach(([key, value]) => {
@@ -79,7 +79,7 @@ export class FunctionExecuteController {
       }
     });
 
-    // Konvertiere Query-Parameter in queryList Format
+    // Convert query parameters to queryList format
     const queryList = Object.entries(query).map(([key, value]) => ({
       key,
       value,
@@ -149,7 +149,7 @@ export class FunctionExecuteController {
       // Send body (always as string)
       response.send(responseBody);
     } catch (error: any) {
-      // Fehler weiterleiten
+      // Forward error
       const errorMessage = error.message;
       throw new NotFoundException(
         `Failed to execute function: ${errorMessage}`,
