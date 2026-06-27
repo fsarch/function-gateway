@@ -32,7 +32,6 @@ export class FunctionExecuteController {
     @Req() request: Request,
     @Param('functionId') functionId: string,
     @Body() dto: ExecuteFunctionDto,
-    @Query('wait') wait: boolean = true,
   ): Promise<any> {
     // 1. Function aus der Datenbank holen
     const func = await this.functionService.getFunction(functionId);
@@ -51,7 +50,7 @@ export class FunctionExecuteController {
     }
 
     // Endpunkt: POST /v1/functions/{functionId}/executions
-    const executionUrl = `${functionWorkerUrl}/v1/functions/${func.functionId}/executions?wait=${wait}`;
+    const executionUrl = `${functionWorkerUrl}/v1/functions/${func.functionId}/executions?wait=true`;
 
     // Extrahiere HTTP-Methode aus dem Request
     const method = dto.method ?? request.method;

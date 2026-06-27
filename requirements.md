@@ -79,16 +79,15 @@ All endpoints require authentication via Bearer token (OIDC/JWT).
 - **Status**: 201 Created
 
 #### Execute Function
-- **Endpoint**: `ANY /functions/:functionId/_actions/execute?wait=true`
+- **Endpoint**: `ANY /functions/:functionId/_actions/execute`
 - **Auth**: Required
 - **Method**: Accepts ALL HTTP methods (GET, POST, PUT, DELETE, PATCH, etc.)
 - **Request Body**: Optional, passed through to function
 - **Request Headers**: Forwarded to function as part of the arguments
-- **Query Parameters**:
-  - `wait`: boolean (default: true) - whether to wait for execution completion
+- **Query Parameters**: None
 - **Response**: Execution result from worker server
 - **Error Handling**: Returns 404 if function not found or execution fails
-- **Note**: The Gateway transforms the HTTP request into a function call. The function receives a single argument object containing `method`, `headers`, and `headerArray` representing the original HTTP request.
+- **Note**: The Gateway transforms the HTTP request into a function call. The function receives a single argument object containing `method`, `headers`, and `headerArray` representing the original HTTP request. The `wait` parameter is always set to `true`.
 
 #### Get Function
 - **Endpoint**: `GET /functions/:functionId`
@@ -127,7 +126,7 @@ All endpoints require authentication via Bearer token (OIDC/JWT).
    - `method`: The HTTP method (GET, POST, etc.)
    - `headers`: Request headers as key-value object
    - `headerArray`: Request headers as array of {key, value} pairs
-6. Gateway sends the function call to the worker: `POST /v1/functions/{functionId}/executions?wait={wait}`
+6. Gateway sends the function call to the worker: `POST /v1/functions/{functionId}/executions?wait=true`
 7. Gateway includes the access token in the `Authorization: Bearer` header
 8. Gateway returns worker response to client
 9. If execution fails, Gateway returns error with context
