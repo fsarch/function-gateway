@@ -65,12 +65,6 @@ export class FunctionTable1720373216668 implements MigrationInterface {
             default: 'gen_random_uuid()',
           },
           {
-            name: 'worker_server_url',
-            type: 'varchar',
-            length: '1024',
-            isNullable: false,
-          },
-          {
             name: 'function_uuid',
             type: 'varchar',
             length: '256',

@@ -18,8 +18,7 @@ export class FunctionService {
 
     const functionEntity = this.functionRepository.create({
       id,
-      workerServerUrl: dto.workerServerUrl,
-      functionUuid: dto.functionUuid,
+      functionUuid: dto.functionId,
     });
 
     const saved = await this.functionRepository.save(functionEntity);
@@ -74,8 +73,7 @@ export class FunctionService {
   private mapToDto(entity: FunctionEntity): FunctionDto {
     return {
       id: entity.id,
-      workerServerUrl: entity.workerServerUrl,
-      functionUuid: entity.functionUuid,
+      functionId: entity.functionUuid,
       creationTime: entity.creationTime,
       deletionTime: entity.deletionTime,
     };

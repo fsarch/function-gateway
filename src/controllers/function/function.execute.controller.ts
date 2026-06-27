@@ -7,13 +7,17 @@ import {
   Req,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { ExecuteFunctionDto } from '../../models/function/ExecuteFunctionDto.js';
 import { FunctionService } from './function.service.js';
 
 @Controller('functions/:functionId/_actions')
 export class FunctionExecuteController {
-  constructor(private readonly functionService: FunctionService) {}
+  constructor(
+    private readonly functionService: FunctionService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @All('execute')
   async executeFunction(
@@ -29,11 +33,14 @@ export class FunctionExecuteController {
       throw new NotFoundException('Function not found');
     }
 
-    // 2. Worker-Server API aufrufen
-    // Endpunkt: POST /v1/functions/{functionUuid}/executions
-    // Base URL aus workerServerUrl nehmen und Pfad anhaengen
-    const workerUrl = func.workerServerUrl;
-    const executionUrl = `${workerUrl}/v1/functions/${func.functionUuid}/executions?wait=${wait}`;
+    // 2. Worker-Server URL aus Config lesen
+    const functionServerUrl = this.configService.get<string>('function.server');
+    if (!functionServerUrl) {
+      throw new NotFoundException('Function server URL not configured');
+    }
+
+    // Endpunkt: POST /v1/functions/{functionId}/executions
+    const executionUrl = `${functionServerUrl}/v1/functions/${func.functionId}/executions?wait=${wait}`;
 
     // Extrahiere HTTP-Methode aus dem Request
     const method = dto.method ?? request.method;

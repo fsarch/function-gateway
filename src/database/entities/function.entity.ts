@@ -19,14 +19,6 @@ export class FunctionEntity {
   id!: string;
 
   @Column({
-    name: 'worker_server_url',
-    type: 'varchar',
-    length: '1024',
-    nullable: false,
-  })
-  workerServerUrl!: string;
-
-  @Column({
     name: 'function_uuid',
     type: 'varchar',
     length: '256',

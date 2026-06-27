@@ -1,11 +1,12 @@
-import { IsNotEmpty, IsString, IsUrl } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateFunctionDto {
-  @IsUrl()
-  @IsNotEmpty()
-  workerServerUrl!: string;
-
+  @ApiProperty({
+    description: 'ID of the function on the worker server',
+    example: 'abc-123-def-456',
+  })
   @IsString()
   @IsNotEmpty()
-  functionUuid!: string;
+  functionId!: string;
 }
