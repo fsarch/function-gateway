@@ -27,6 +27,14 @@ export class FunctionEntity {
   functionUuid!: string;
 
   @Column({
+    name: 'name',
+    type: 'varchar',
+    length: '2048',
+    nullable: true,
+  })
+  name!: string | null;
+
+  @Column({
     name: 'external_id',
     type: 'varchar',
     length: '256',

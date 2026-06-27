@@ -71,6 +71,12 @@ export class FunctionTable1720373216668 implements MigrationInterface {
             isNullable: false,
           },
           {
+            name: 'name',
+            type: 'varchar',
+            length: '2048',
+            isNullable: true,
+          },
+          {
             name: 'external_id',
             type: 'varchar',
             length: '256',
