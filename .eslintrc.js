@@ -1,0 +1,18 @@
+export default {
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint', 'prettier'],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended',
+  ],
+  parserOptions: {
+    ecmaVersion: 2022,
+    sourceType: 'module',
+  },
+  rules: {
+    '@typescript-eslint/explicit-function-return-type': 'warn',
+    '@typescript-eslint/no-unused-vars': 'warn',
+    'prettier/prettier': 'warn',
+  },
+};
