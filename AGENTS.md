@@ -12,6 +12,7 @@ Function Gateway is a NestJS application that manages and executes remote functi
 - Use `!` (definite assignment assertion) for TypeORM entity properties
 - Use `camelCase` for variables and functions, `PascalCase` for classes and types
 - Use `snake_case` for database column names
+- Write all code comments in English
 
 ### File Organization
 - Entities: `src/database/entities/`
@@ -64,5 +65,5 @@ Function Gateway is a NestJS application that manages and executes remote functi
 - Test: `npm run test`
 
 ## Documentation
-- Always update `requirements.md` when making changes to the API, database schema, or configuration
+- Always update `requirements.md` after every functional change to the API, database schema, or configuration
 - Keep `AGENTS.md` up to date with project-specific conventions and rules
