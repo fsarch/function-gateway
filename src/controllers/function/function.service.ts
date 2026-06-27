@@ -74,6 +74,7 @@ export class FunctionService {
     return {
       id: entity.id,
       functionId: entity.functionUuid,
+      name: entity.name,
       creationTime: entity.creationTime,
       deletionTime: entity.deletionTime,
     };

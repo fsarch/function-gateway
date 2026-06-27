@@ -50,8 +50,8 @@ Stores function registrations.
 | Column | Type | Nullable | Description |
 |--------|------|----------|-------------|
 | id | uuid | NO | Primary key, auto-generated |
-| function_uuid | varchar(256) | NO | UUID of the function on the worker server |
-| function_id | varchar(256) | NO | ID of the function (exposed in API) |
+| function_uuid | varchar(256) | NO | UUID of the function on the worker server (stored as function_uuid) |
+| name | varchar(256) | YES | Human-readable name of the function |
 | external_id | varchar(256) | YES | Optional external identifier |
 | function_type_id | uuid | YES | Foreign key to function_type |
 | creation_time | timestamp with time zone | NO | Auto-generated on create |
