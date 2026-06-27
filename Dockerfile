@@ -1,39 +1,49 @@
-# Build stage
-FROM node:20-alpine AS builder
+# Base
+FROM node:24.14.1-trixie-slim AS base
 
-WORKDIR /app
+ENV PORT 8080
 
-# Copy package files
+WORKDIR /usr/src/app
+
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci
 
-# Copy source files
-COPY . .
+# Production Deps
+FROM base AS deps
 
-# Build the application
+ENV NODE_ENV production
+
+RUN apt-get update && \
+    apt-get install -y node-gyp && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+RUN npm ci --fetch-timeout=300000
+
+
+# Build Dockerfile
+FROM base AS builder
+
+RUN apt-get update && \
+    apt-get install -y node-gyp && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+RUN npm ci --fetch-timeout=300000
+
+COPY . ./
 RUN npm run build
 
-# Production stage
-FROM node:20-alpine
 
-WORKDIR /app
+# Main Dockerfile
+FROM base
 
-# Copy built files and production dependencies
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
+ENV NODE_ENV production
 
-# Copy config files
-COPY config/ ./config/
+EXPOSE 8080
 
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
+COPY --from=builder --chown=node:node /usr/src/app/dist ./dist
+COPY --from=deps --chown=node:node /usr/src/app/node_modules ./node_modules
 
-USER nodejs
+USER node
 
-EXPOSE 3000
+CMD ["node", "./dist/main.js"]
 
-CMD ["node", "dist/main.js"]
