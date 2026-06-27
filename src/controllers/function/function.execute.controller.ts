@@ -5,17 +5,25 @@ import {
   Param,
   Query,
   Req,
+  UseGuards,
   NotFoundException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { AuthGuard } from '@fsarch/server/auth';
+import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 import { ExecuteFunctionDto } from '../../models/function/ExecuteFunctionDto.js';
 import { FunctionService } from './function.service.js';
+import { FunctionWorkerAuthService } from '../../services/function-worker/function-worker.auth.service.js';
+import { ConfigService } from '@nestjs/config';
 
+@UseGuards(AuthGuard)
+@ApiBearerAuth()
+@ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @Controller('functions/:functionId/_actions')
 export class FunctionExecuteController {
   constructor(
     private readonly functionService: FunctionService,
+    private readonly functionWorkerAuthService: FunctionWorkerAuthService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -33,14 +41,17 @@ export class FunctionExecuteController {
       throw new NotFoundException('Function not found');
     }
 
-    // 2. Worker-Server URL aus Config lesen
-    const functionServerUrl = this.configService.get<string>('function.node_worker');
-    if (!functionServerUrl) {
-      throw new NotFoundException('Function server URL not configured');
+    // 2. Access Token für Function Worker holen
+    const accessToken = await this.functionWorkerAuthService.getAccessToken();
+
+    // 3. Function Worker URL aus Config lesen
+    const functionWorkerUrl = this.configService.get<string>('function_worker.url');
+    if (!functionWorkerUrl) {
+      throw new NotFoundException('Function worker URL not configured');
     }
 
     // Endpunkt: POST /v1/functions/{functionId}/executions
-    const executionUrl = `${functionServerUrl}/v1/functions/${func.functionId}/executions?wait=${wait}`;
+    const executionUrl = `${functionWorkerUrl}/v1/functions/${func.functionId}/executions?wait=${wait}`;
 
     // Extrahiere HTTP-Methode aus dem Request
     const method = dto.method ?? request.method;
@@ -70,12 +81,16 @@ export class FunctionExecuteController {
     try {
       const response = await fetch(executionUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
         body: JSON.stringify({
-          arguments: dto.arguments ?? [],
-          method,
-          headers,
-          headerArray,
+          arguments: [{
+            method,
+            headers,
+            headerArray,
+          }],
         }),
       });
 
