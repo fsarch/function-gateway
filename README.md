@@ -10,9 +10,9 @@ A NestJS-based API service for managing and executing remote functions via worke
 
 ## Prerequisites
 
-- Node.js 20+
+- Node.js 24+
 - PostgreSQL
-- npm or yarn
+- pnpm (via `corepack enable`)
 
 ## Installation
 
@@ -22,7 +22,8 @@ git clone https://github.com/fsarch/function-gateway.git
 cd function-gateway
 
 # Install dependencies
-npm install
+corepack enable
+pnpm install
 
 # Create .env file
 cp .env.example .env
@@ -39,28 +40,32 @@ DB_DATABASE=function_gateway
 
 ```bash
 # Development mode
-npm run start:dev
+pnpm run start:dev
 
 # Production mode
-npm run build
-npm run start:prod
+pnpm run build
+pnpm run start:prod
 
 # With Docker
 docker build -t function-gateway .
-docker run -p 3000:3000 --env-file .env function-gateway
+docker run -p 8080:8080 --env-file .env function-gateway
+
+# Distroless variant (no shell/package manager, smaller attack surface)
+docker build -f Dockerfile.distroless -t function-gateway:distroless .
+docker run -p 8080:8080 --env-file .env function-gateway:distroless
 ```
 
 ## Database Migrations
 
 ```bash
 # Run migrations
-npm run migration:run
+pnpm run migration:run
 
 # Generate new migration
-npm run migration:generate -- --name=MigrationName
+pnpm run migration:generate -- --name=MigrationName
 
 # Revert last migration
-npm run migration:revert
+pnpm run migration:revert
 ```
 
 ## API Endpoints
@@ -165,8 +170,13 @@ function-gateway/
 │   └── typeorm.js
 ├── .env.example
 ├── .gitignore
+├── biome.json
 ├── Dockerfile
+├── Dockerfile.distroless
 ├── package.json
+├── pnpm-workspace.yaml
+├── vitest.config.ts
+├── vitest.config.e2e.ts
 └── README.md
 ```
 

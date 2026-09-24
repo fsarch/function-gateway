@@ -1,5 +1,5 @@
-import { AppModule } from './app.module.js';
 import { FsArchAppBuilder } from '@fsarch/server';
+import { AppModule } from './app.module.js';
 import { DATABASE_OPTIONS } from './database/index.js';
 
 async function bootstrap() {
@@ -9,7 +9,8 @@ async function bootstrap() {
   })
     .addSwagger({
       title: 'Function Gateway API',
-      description: 'API for managing and executing remote functions via worker servers',
+      description:
+        'API for managing and executing remote functions via worker servers',
       version: '1.0',
     })
     .enableAuth()

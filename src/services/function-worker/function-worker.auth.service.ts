@@ -34,7 +34,8 @@ export class FunctionWorkerAuthService {
       return this.accessTokenCache.accessToken;
     }
 
-    const config = this.configService.get<FunctionWorkerConfig>('function_worker');
+    const config =
+      this.configService.get<FunctionWorkerConfig>('function_worker');
     if (!config?.auth) {
       throw new Error('Function worker auth configuration not found');
     }

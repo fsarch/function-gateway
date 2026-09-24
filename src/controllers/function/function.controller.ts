@@ -1,14 +1,14 @@
+import { AuthGuard } from '@fsarch/server/auth';
 import {
-  Controller,
-  Post,
-  Get,
-  Delete,
   Body,
+  Controller,
+  Delete,
+  Get,
   Param,
+  Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@fsarch/server/auth';
 import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { CreateFunctionDto } from '../../models/function/CreateFunctionDto.js';
 import { FunctionDto } from '../../models/function/FunctionDto.js';
@@ -35,7 +35,9 @@ export class FunctionController {
   }
 
   @Get('/:functionId')
-  async getFunction(@Param('functionId') functionId: string): Promise<FunctionDto> {
+  async getFunction(
+    @Param('functionId') functionId: string,
+  ): Promise<FunctionDto> {
     return this.functionService.getFunction(functionId);
   }
 

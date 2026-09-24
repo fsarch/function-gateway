@@ -49,7 +49,10 @@ export class FunctionEntity {
   })
   functionTypeId!: string | null;
 
-  @ManyToOne(() => FunctionTypeEntity, (type) => type.id)
+  @ManyToOne(
+    () => FunctionTypeEntity,
+    (type) => type.id,
+  )
   @JoinColumn({ name: 'function_type_id' })
   functionType!: FunctionTypeEntity | null;
 

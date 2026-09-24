@@ -1,18 +1,18 @@
+import { AuthGuard, Public } from '@fsarch/server/auth';
 import {
-  Controller,
   All,
+  Controller,
+  NotFoundException,
   Param,
   Req,
   Res,
   UseGuards,
-  NotFoundException,
 } from '@nestjs/common';
-import { AuthGuard, Public } from '@fsarch/server/auth';
-import { Request } from 'express';
-import type { Response } from 'express';
-import { FunctionService } from './function.service.js';
-import { FunctionWorkerAuthService } from '../../services/function-worker/function-worker.auth.service.js';
 import { ConfigService } from '@nestjs/config';
+import type { Response } from 'express';
+import { Request } from 'express';
+import { FunctionWorkerAuthService } from '../../services/function-worker/function-worker.auth.service.js';
+import { FunctionService } from './function.service.js';
 
 @UseGuards(AuthGuard)
 @Public()
@@ -41,7 +41,9 @@ export class FunctionExecuteController {
     const accessToken = await this.functionWorkerAuthService.getAccessToken();
 
     // 3. Get function worker URL from config
-    const functionWorkerUrl = this.configService.get<string>('function_worker.url');
+    const functionWorkerUrl = this.configService.get<string>(
+      'function_worker.url',
+    );
     if (!functionWorkerUrl) {
       throw new NotFoundException('Function worker URL not configured');
     }
@@ -56,10 +58,13 @@ export class FunctionExecuteController {
     const requestHeaders = request.headers as Record<string, string | string[]>;
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...Object.entries(requestHeaders).reduce((acc, [key, value]) => {
-        acc[key] = Array.isArray(value) ? value.join(',') : value;
-        return acc;
-      }, {} as Record<string, string>),
+      ...Object.entries(requestHeaders).reduce(
+        (acc, [key, value]) => {
+          acc[key] = Array.isArray(value) ? value.join(',') : value;
+          return acc;
+        },
+        {} as Record<string, string>,
+      ),
     };
 
     // Convert headers to headerList format
@@ -70,10 +75,15 @@ export class FunctionExecuteController {
 
     // Extract query parameters from request
     const queryParams: Record<string, string> = {};
-    const requestQuery = request.query as Record<string, string | string[] | undefined>;
+    const requestQuery = request.query as Record<
+      string,
+      string | string[] | undefined
+    >;
     Object.entries(requestQuery).forEach(([key, value]) => {
       if (value !== undefined) {
-        queryParams[key] = Array.isArray(value) ? value.join(',') : String(value);
+        queryParams[key] = Array.isArray(value)
+          ? value.join(',')
+          : String(value);
       }
     });
 
@@ -91,26 +101,30 @@ export class FunctionExecuteController {
           Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({
-          arguments: [{
-            method,
-            headers: headers,
-            headerList: headerList,
-            queryParams,
-            queryParamList,
-          }],
+          arguments: [
+            {
+              method,
+              headers: headers,
+              headerList: headerList,
+              queryParams,
+              queryParamList,
+            },
+          ],
         }),
       });
 
       if (!workerResponse.ok) {
         const errorData: any = await workerResponse.json().catch(() => ({}));
-        const errorMessage = (errorData as { message?: string }).message || workerResponse.statusText;
+        const errorMessage =
+          (errorData as { message?: string }).message ||
+          workerResponse.statusText;
         throw new NotFoundException(
           `Failed to execute function: ${errorMessage}`,
         );
       }
 
       // Parse wrapped function response: { isError: boolean, result: { status: number, body: string, ... } }
-      const wrappedResponse = await workerResponse.json() as {
+      const wrappedResponse = (await workerResponse.json()) as {
         isError: boolean;
         result: {
           status?: number;
@@ -132,9 +146,15 @@ export class FunctionExecuteController {
 
       // Extract response data with defaults
       const httpStatusCode = unwrapped.status ?? 200;
-      const httpStatusText = unwrapped.statusText ?? 'OK';
       const responseBody = unwrapped.body ?? '';
-      const responseHeaderList = unwrapped.headerList ?? (unwrapped.headers ? Object.entries(unwrapped.headers).map(([key, value]) => ({ key, value })) : []);
+      const responseHeaderList =
+        unwrapped.headerList ??
+        (unwrapped.headers
+          ? Object.entries(unwrapped.headers).map(([key, value]) => ({
+              key,
+              value,
+            }))
+          : []);
 
       // Set response status
       response.status(httpStatusCode);

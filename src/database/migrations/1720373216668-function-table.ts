@@ -1,4 +1,9 @@
-import { MigrationInterface, QueryRunner, Table, TableColumn, TableForeignKey } from 'typeorm';
+import {
+  MigrationInterface,
+  QueryRunner,
+  Table,
+  TableForeignKey,
+} from 'typeorm';
 
 export class FunctionTable1720373216668 implements MigrationInterface {
   name = 'FunctionTable1720373216668';

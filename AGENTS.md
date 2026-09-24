@@ -51,18 +51,19 @@ Function Gateway is a NestJS application that manages and executes remote functi
 
 ## Testing
 - Place test files alongside the code they test with `.spec.ts` suffix
-- Use Jest as the test framework
+- Use Vitest as the test framework
 - Test both success and error paths
 - Mock external dependencies
 
 ## Commands
-- Build: `npm run build`
-- Start dev: `npm run start:dev`
-- Run migrations: `npm run migration:run`
-- Generate migrations: `npm run migration:generate`
-- Create migrations: `npm run migration:create`
-- Lint: `npm run lint`
-- Test: `npm run test`
+- Package manager: `pnpm` (via `corepack enable`), not `npm`/`yarn`
+- Build: `pnpm run build`
+- Start dev: `pnpm run start:dev`
+- Run migrations: `pnpm run migration:run`
+- Generate migrations: `pnpm run migration:generate`
+- Create migrations: `pnpm run migration:create`
+- Lint/format: `pnpm run lint` (Biome)
+- Test: `pnpm run test`
 
 ## Documentation
 - Always update `requirements.md` after every functional change to the API, database schema, or configuration

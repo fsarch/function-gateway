@@ -7,7 +7,10 @@ export class FunctionDto {
   @ApiProperty({ description: 'ID of the function on the worker server' })
   functionId!: string;
 
-  @ApiProperty({ description: 'Human-readable name of the function', nullable: true })
+  @ApiProperty({
+    description: 'Human-readable name of the function',
+    nullable: true,
+  })
   name!: string | null;
 
   @ApiProperty({ description: 'Creation timestamp' })

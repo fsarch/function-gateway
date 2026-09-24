@@ -1,10 +1,10 @@
+import crypto from 'node:crypto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FunctionEntity } from '../../database/entities/function.entity.js';
 import { CreateFunctionDto } from '../../models/function/CreateFunctionDto.js';
 import { FunctionDto } from '../../models/function/FunctionDto.js';
-import crypto from 'node:crypto';
 
 @Injectable()
 export class FunctionService {
@@ -52,7 +52,9 @@ export class FunctionService {
     return this.mapToDto(func);
   }
 
-  async getByFunctionUuid(functionUuid: string): Promise<FunctionEntity | null> {
+  async getByFunctionUuid(
+    functionUuid: string,
+  ): Promise<FunctionEntity | null> {
     return this.functionRepository.findOne({
       where: { functionUuid },
     });

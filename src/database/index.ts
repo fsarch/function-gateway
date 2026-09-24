@@ -7,6 +7,4 @@ export const DATABASE_OPTIONS = {
   migrations: [FunctionTable1720373216668],
 };
 
-export { FunctionEntity };
-export { FunctionTypeEntity };
-export { FunctionTable1720373216668 };
+export { FunctionEntity, FunctionTable1720373216668, FunctionTypeEntity };
