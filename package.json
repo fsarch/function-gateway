@@ -1,6 +1,6 @@
 {
   "name": "function-gateway",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Function Gateway - Manages and executes remote functions via worker servers",
   "author": "",
   "private": true,
