@@ -1,20 +1,14 @@
 import { FsArchAppBuilder } from '@fsarch/server';
-import { AppModule } from './app.module.js';
-import { DATABASE_OPTIONS } from './database/index.js';
+import { descriptor } from './lib/index.js';
 
 async function bootstrap() {
-  const app = await new FsArchAppBuilder(AppModule, {
+  const app = await new FsArchAppBuilder(descriptor.module.register(), {
     name: 'Function-Gateway',
     version: '0.0.1',
   })
-    .addSwagger({
-      title: 'Function Gateway API',
-      description:
-        'API for managing and executing remote functions via worker servers',
-      version: '1.0',
-    })
+    .addSwagger(descriptor.swagger)
     .enableAuth()
-    .setDatabase(DATABASE_OPTIONS)
+    .setDatabase({ entities: descriptor.entities, migrations: descriptor.migrations })
     .build();
 
   await app.listen(process.env.PORT ?? 8080);
