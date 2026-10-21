@@ -1,11 +1,22 @@
 {
-  "name": "function-gateway",
+  "name": "@fsarch/function-gateway",
   "version": "0.1.0",
   "description": "Function Gateway - Manages and executes remote functions via worker servers",
   "author": "",
-  "private": true,
   "license": "UNLICENSED",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/lib/index.js",
+      "types": "./dist/lib/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "scripts": {
     "build": "fsarch-server build",
     "format": "biome format --write src test",
@@ -25,7 +36,7 @@
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
-    "@fsarch/server": "^0.5.1",
+    "@fsarch/server": "^0.5.2",
     "@nestjs/common": "^12.1.0",
     "@nestjs/config": "^12.0.1",
     "@nestjs/core": "^12.1.0",
@@ -59,5 +70,9 @@
     "unplugin-swc": "^2.0.0",
     "vitest": "^5.0.1"
   },
-  "packageManager": "pnpm@12.6.0+sha512.3ef68f951cb111ac204b4a5a16f0b2ddf0da56a96e0413e81d855d9f0b55ef926714709028e1cd00c405c2c5fb7b9e8ec4dc46777c805d0373c2f2ff00fd20ec"
+  "packageManager": "pnpm@12.6.0+sha512.3ef68f951cb111ac204b4a5a16f0b2ddf0da56a96e0413e81d855d9f0b55ef926714709028e1cd00c405c2c5fb7b9e8ec4dc46777c805d0373c2f2ff00fd20ec",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fsarch/function-gateway.git"
+  }
 }

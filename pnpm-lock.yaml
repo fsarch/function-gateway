@@ -167,8 +167,8 @@ importers:
   .:
     dependencies:
       '@fsarch/server':
-        specifier: ^0.5.1
-        version: 0.5.1(@swc/core@1.16.2)(@types/node@26.6.2)(class-transformer@0.5.1)(class-validator@0.15.1)(hono@4.13.8)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1)(ts-loader@9.6.2(typescript@5.9.3)(webpack@5.111.1(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28)))(ts-node@10.9.2(@swc/core@1.16.2)(@types/node@26.6.2)(typescript@5.9.3))(typescript@5.9.3)(webpack@5.111.1(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28))
+        specifier: ^0.5.2
+        version: 0.5.2(@swc/core@1.16.2)(@types/node@26.6.2)(class-transformer@0.5.1)(class-validator@0.15.1)(hono@4.13.8)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1)(ts-loader@9.6.2(typescript@5.9.3)(webpack@5.111.1(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28)))(ts-node@10.9.2(@swc/core@1.16.2)(@types/node@26.6.2)(typescript@5.9.3))(typescript@5.9.3)(webpack@5.111.1(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28))
       '@nestjs/common':
         specifier: ^12.1.0
         version: 12.1.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1)
@@ -214,7 +214,7 @@ importers:
         version: 2.5.14
       '@nestjs/cli':
         specifier: ^12.0.6
-        version: 12.0.6(@swc/core@1.16.2)(@types/node@26.6.2)(ts-loader@9.6.2(typescript@5.9.3)(webpack@5.111.1(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28)))(webpack@5.111.1(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28))
+        version: 12.0.8(@swc/core@1.16.2)(@types/node@26.6.2)(ts-loader@9.6.2(typescript@5.9.3)(webpack@5.111.1(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28)))(webpack@5.111.1(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28))
       '@nestjs/schematics':
         specifier: ^12.0.5
         version: 12.0.5(chokidar@5.0.0)(typescript@5.9.3)
@@ -383,8 +383,8 @@ packages:
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
 
-  '@fsarch/server@0.5.1':
-    resolution: {integrity: sha512-Zyb9chTNZbY6ycZd4BDqUGfSWCwImrQ5FasHXc1/qKt7+iAwVgrQkR1w87G/KedyhWXXlFK+npWCT/GTX5QGYQ==}
+  '@fsarch/server@0.5.2':
+    resolution: {integrity: sha512-/fpFNg2lItK5UPEZ2Hqb2KjHR5NtXNs+P83e1ZXPpybGd3gbqKWyYmg6xaEZnMA1ikfrSj/KWEO5DHMJE8gG+w==}
     engines: {node: '>=24.0.0'}
     hasBin: true
 
@@ -606,37 +606,6 @@ packages:
   '@modelcontextprotocol/server@2.1.0':
     resolution: {integrity: sha512-FdvwZU5N03O77Suh35JqjAqq5R1ZTEPFtwu6N4BgBq28qrQtrCnpbLL5U2pwYCuE194jAw0xnlOVmIqhfoYuUQ==}
     engines: {node: '>=20'}
-
-  '@nestjs/cli@12.0.6':
-    resolution: {integrity: sha512-qf+9UUBv0+ciGPN87Z+D9JHOJN3EofwgfFlhKzHpu1qitEEtfHxiQ2ChAU5vxkXvelc9yV1tyDZdH2fkTgxy4A==}
-    engines: {node: '>= 20.11'}
-    hasBin: true
-    peerDependencies:
-      '@rspack/core': ^1.7.7 || ^2.1.10
-      '@swc/cli': ^0.8.0
-      '@swc/core': ^1.15.18
-      fork-ts-checker-webpack-plugin: ^9.1.0
-      ts-loader: ^9.5.4
-      tsconfig-paths-webpack-plugin: ^4.2.0
-      webpack: ^5.105.4
-      webpack-node-externals: ^3.0.0
-    peerDependenciesMeta:
-      '@rspack/core':
-        optional: true
-      '@swc/cli':
-        optional: true
-      '@swc/core':
-        optional: true
-      fork-ts-checker-webpack-plugin:
-        optional: true
-      ts-loader:
-        optional: true
-      tsconfig-paths-webpack-plugin:
-        optional: true
-      webpack:
-        optional: true
-      webpack-node-externals:
-        optional: true
 
   '@nestjs/cli@12.0.8':
     resolution: {integrity: sha512-iqm+KXb8cnpnlD4hMBf1w2/4i1GSs0DCLI7oyP4MTmwf9KmjTG1SpAjkl/D+kKuUToycBrMF4+eSwyPVdTMGKQ==}
@@ -3217,7 +3186,7 @@ snapshots:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
 
-  '@fsarch/server@0.5.1(@swc/core@1.16.2)(@types/node@26.6.2)(class-transformer@0.5.1)(class-validator@0.15.1)(hono@4.13.8)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1)(ts-loader@9.6.2(typescript@5.9.3)(webpack@5.111.1(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28)))(ts-node@10.9.2(@swc/core@1.16.2)(@types/node@26.6.2)(typescript@5.9.3))(typescript@5.9.3)(webpack@5.111.1(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28))':
+  '@fsarch/server@0.5.2(@swc/core@1.16.2)(@types/node@26.6.2)(class-transformer@0.5.1)(class-validator@0.15.1)(hono@4.13.8)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1)(ts-loader@9.6.2(typescript@5.9.3)(webpack@5.111.1(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28)))(ts-node@10.9.2(@swc/core@1.16.2)(@types/node@26.6.2)(typescript@5.9.3))(typescript@5.9.3)(webpack@5.111.1(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28))':
     dependencies:
       '@grpc/grpc-js': 1.14.5
       '@modelcontextprotocol/core': 2.1.0
@@ -3502,31 +3471,6 @@ snapshots:
     dependencies:
       '@modelcontextprotocol/core': 2.1.0
       zod: 4.6.5
-
-  '@nestjs/cli@12.0.6(@swc/core@1.16.2)(@types/node@26.6.2)(ts-loader@9.6.2(typescript@5.9.3)(webpack@5.111.1(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28)))(webpack@5.111.1(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28))':
-    dependencies:
-      '@angular-devkit/core': 22.2.0(chokidar@5.0.0)
-      '@angular-devkit/schematics': 22.2.0(chokidar@5.0.0)
-      '@angular-devkit/schematics-cli': 22.2.0(@types/node@26.6.2)(chokidar@5.0.0)
-      '@inquirer/prompts': 8.7.2(@types/node@26.6.2)
-      '@nestjs/schematics': 12.0.5(chokidar@5.0.0)(typescript@6.0.3)
-      ansis: 4.4.0
-      chokidar: 5.0.0
-      cli-table3: 0.6.5
-      commander: 15.0.0
-      jsonc-parser: 3.3.1
-      minimatch: 10.2.6
-      node-emoji: 2.2.0
-      ora: 9.4.1
-      tsconfig-paths: 4.2.0
-      typescript: 6.0.3
-    optionalDependencies:
-      '@swc/core': 1.16.2
-      ts-loader: 9.6.2(typescript@5.9.3)(webpack@5.111.1(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28))
-      webpack: 5.111.1(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28)
-    transitivePeerDependencies:
-      - '@types/node'
-      - prettier
 
   '@nestjs/cli@12.0.8(@swc/core@1.16.2)(@types/node@26.6.2)(ts-loader@9.6.2(typescript@5.9.3)(webpack@5.111.1(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28)))(webpack@5.111.1(@swc/core@1.16.2)(lightningcss@1.33.0)(postcss@8.5.28))':
     dependencies:
